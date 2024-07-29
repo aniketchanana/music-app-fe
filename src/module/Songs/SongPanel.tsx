@@ -1,19 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
-import { videoToAudio } from '../../api.utils';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import Typography from '../../components/Typography';
+import AudioPlayer from './AudioPlayer';
 import SongsList from './SongsList';
 import { searchSong } from './api';
 import { ISearchedSongItems } from './types';
 
-function SearchSong() {
+function SongPanel({ audioPlayerId }: { audioPlayerId: string }) {
   const [songName, setSongName] = useState('');
-  const [activeSong, setActiveSong] = useState<{
-    audioFormatHigh: string;
-    audioFormatLow: string;
-  } | null>(null);
+  const [activeSongId, setActiveSongId] = useState('');
 
   const { data, isLoading, refetch, isFetching } = useQuery<
     void,
@@ -24,19 +21,14 @@ function SearchSong() {
     queryFn: () => searchSong.queryFn(songName),
     enabled: false,
   });
+
   const allSongs = useMemo(() => data?.items || [], [data?.items]);
   const handleSongClick = (songId: string) => {
-    videoToAudio.get(songId).then((resp) => {
-      setActiveSong(resp);
-    });
+    setActiveSongId(songId);
   };
   return (
     <div className='flex flex-col gap-3 p-10 w-1/2'>
-      {activeSong && (
-        <audio controls>
-          <source src={activeSong.audioFormatHigh} type='audio/webm' />
-        </audio>
-      )}
+      <AudioPlayer songId={activeSongId} audioPlayerId={audioPlayerId} />
       <div className='flex gap-2'>
         <Input
           className='bg-transparent'
@@ -58,4 +50,4 @@ function SearchSong() {
   );
 }
 
-export default SearchSong;
+export default SongPanel;

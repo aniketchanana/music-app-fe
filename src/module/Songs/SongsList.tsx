@@ -14,7 +14,10 @@ function SongsList({ songs, handleSongClick }: Props) {
       </Typography>
     );
   return songs.map((song) => (
-    <div className='flex items-center justify-start gap-2'>
+    <div
+      className='flex items-center justify-start gap-2'
+      key={song.id.videoId}
+    >
       <img className='w-10 h-10' src={song.snippet.thumbnails.default.url} />
       <Typography
         onClick={() => handleSongClick(song.id.videoId)}
